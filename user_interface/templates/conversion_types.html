@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+
+{% for unit in units %}
+<p>{{ unit.unit }}</p>
+{% endfor %}
+{% endblock %}

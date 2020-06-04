@@ -3,8 +3,33 @@
 {% block page_content %}
 <head>
   <title>Converter</title>
+  <style>
+    .btn-primary {
+      color: #007bff;
+      background-color: #fff;
+      border-color: #007bff;
+      width: 300px;
+      height: 100px;
+      font-size: 20px;
+    }
+    .btn-primary:hover {
+      color: #fff;
+      background-color: #007bff;
+      border-color: #007bff; /*set the color you want here*/
+    }
+    .btn-xl {
+      padding: auto auto;
+    }
+</style>
 </head>
 <h1>Conversions available</h1>
-<div class="row">
+<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+  {% for type in types %}
+  <div class="btn-group mr-2" role="group">
+    <a href="{% url 'conversion_types' type.measurement %}">
+    <button type="button" class="btn btn-primary">{{ type.measurement }}</button>
+    </a>
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}
