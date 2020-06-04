@@ -1,3 +1,7 @@
 from django.shortcuts import render
+from user_interface.models import Type
 
-# Create your views here.
+def index(request):
+    types = Type.objects.all()
+    context = {"types": types}
+    return render(request, "index.html", context)
