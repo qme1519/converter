@@ -17,15 +17,22 @@
       background-color: #007bff;
       border-color: #007bff; /*set the color you want here*/
     }
+    .btn-primary:focus,.btn-primary:active {
+       outline: none !important;
+       box-shadow: none;
+       color: #007bff;
+       background-color: #fff;
+       border-color: #007bff;
+    }
     .btn-xl {
       padding: auto auto;
     }
 </style>
 </head>
 <h1>Conversions available</h1>
-<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+<div class="btn-toolbar" role="toolbar">
   {% for type in types %}
-  <div class="btn-group mr-2" role="group">
+  <div class="btn-group mr-2 mb-2" role="group">
     <a href="{% url 'conversion_types' type.measurement %}">
     <button type="button" class="btn btn-primary">{{ type.measurement }}</button>
     </a>
