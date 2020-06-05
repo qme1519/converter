@@ -8,21 +8,14 @@
       color: #007bff;
       background-color: #fff;
       border-color: #007bff;
-      width: 300px;
-      height: 100px;
+      width: 500px;
+      height: 150px;
       font-size: 20px;
     }
     .btn-primary:hover {
       color: #fff;
       background-color: #007bff;
       border-color: #007bff; /*set the color you want here*/
-    }
-    .btn-primary:focus,.btn-primary:active {
-       outline: none !important;
-       box-shadow: none;
-       color: #007bff;
-       background-color: #fff;
-       border-color: #007bff;
     }
     .btn-xl {
       padding: auto auto;
@@ -34,7 +27,7 @@
   {% for type in types %}
   <div class="btn-group mr-2 mb-2" role="group">
     <a href="{% url 'conversion_types' type.measurement %}">
-    <button type="button" class="btn btn-primary">{{ type.measurement }}</button>
+    <button type="button" class="btn btn-primary" onclick="this.blur();"">{{ type.measurement }}</button>
     </a>
   </div>
   {% endfor %}

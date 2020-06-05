@@ -1,8 +1,97 @@
 {% extends "base.html" %}
 {% load static %}
 {% block page_content %}
+<head>
+  <title>{{ type }}</title>
+  <script type="text/javascript">
+    var conversion_table = {};
 
+    {% for unit in units %}
+      conversion_table['{{ unit.unit }}'] = {{ unit.to_base_unit }}
+    {% endfor %}
+
+    console.log(conversion_table)
+
+    function convertNumber(inputLocation) {
+      console.log("in function")
+      var sourceSelector = document.getElementById("sourceDropdownMenuButton");
+      var destinationSelector = document.getElementById("destinationDropdownMenuButton");
+      if (sourceSelector.value != "none" && destinationSelector.value != "none")
+      {
+        var sourceField = document.getElementById("sourceInput");
+        var destinationField = document.getElementById("destinationInput");
+        console.log(typeof(sourceField.value))
+        if (sourceField.value < 0) {
+          sourceField.value = sourceField.value * -1;
+        }
+        if (destinationField.value < 0) {
+          destinationField.value = destinationField.value * -1;
+        }
+
+        var sourceConversion = conversion_table[sourceSelector.value]
+        var destinationConversion = conversion_table[destinationSelector.value]
+
+        if (inputLocation == "source") {
+          console.log(sourceField.value)
+          destinationField.value = sourceField.value * sourceConversion / destinationConversion;
+        }
+        else if (inputLocation == "destination") {
+          console.log("destination")
+          sourceField.value = destinationField.value * destinationConversion / sourceConversion;
+        }
+      }
+
+    }
+
+  </script>
+  <style>
+    .btn-secondary {
+      width: 200px;
+      height: 50px;
+    }
+    .numberInput {
+      width: 200px;
+      height:50px;
+      padding-bottom: 6px;
+    }
+  </style>
+</head>
+<h1>{{ type }} conversion </h1>
+<div class="row">
+<form method="POST">
+  {% csrf_token %}
+  {{ unit_converter.source_value }}
+<div class="btn-group">
+<button class="btn btn-secondary dropdown-toggle" type="button" id="sourceDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
+    Choose a unit
+  </button>
+  <div class="dropdown-menu" aria-labelledby="sourceDropdownMenuButton">
 {% for unit in units %}
-<p>{{ unit.unit }}</p>
+    <a class="dropdown-item">{{ unit.unit }}</a>
 {% endfor %}
+  </div>
+</div>
+=
+{{ unit_converter.destination_value }}
+<div class="btn-group">
+<button class="btn btn-secondary dropdown-toggle " type="button" id="destinationDropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
+    Choose a unit
+  </button>
+  <div class="dropdown-menu" aria-labelledby="destinationDropdownMenuButton">
+{% for unit in units %}
+    <a class="dropdown-item">{{ unit.unit }}</a>
+{% endfor %}
+  </div>
+</div>
+
+<button type="submit" class="btn btn-primary">Add it to your search history</button>
+</form>
+</div>
+<script type="text/javascript">
+  $('.dropdown-item').on('click',  function(){
+        var btnObj = $(this).parent().siblings('button');
+        $(btnObj).text($(this).text());
+        $(btnObj).val($(this).text());
+    });
+</script>
 {% endblock %}
