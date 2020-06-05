@@ -8,9 +8,10 @@ class Type(models.Model):
 
 class Unit(models.Model):
     type = models.ForeignKey('Type', on_delete=models.CASCADE)
-    to_base_unit = models.FloatField()
+    to_base_multiplier = models.FloatField()
+    to_base_adder = models.FloatField()
     unit = models.CharField(max_length=50)
-
+    abbreviation = models.CharField(max_length=10)
     def __str__(self):
         return self.unit
 
@@ -20,3 +21,6 @@ class BaseUnit(models.Model):
 
     def __str__(self):
         return self.base_unit.unit
+
+class UpdateCurrency(models.Model):
+    timestamp = models.BigIntegerField()

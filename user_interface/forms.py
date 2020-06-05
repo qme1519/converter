@@ -10,7 +10,6 @@ class UnitConversion(forms.Form):
     "onkeyup": "convertNumber('source')",
     "placeholder": "Number to convert",
     "id": "sourceInput",
-    "min": "0",
     "class": "numberInput"
     }
     )
@@ -23,7 +22,6 @@ class UnitConversion(forms.Form):
         "onkeyup": "convertNumber('destination')",
         "placeholder": "Number to convert",
         "id": "destinationInput",
-        "min": "0",
         "class": "numberInput"
         }
         )

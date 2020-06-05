@@ -7,37 +7,33 @@
     var conversion_table = {};
 
     {% for unit in units %}
-      conversion_table['{{ unit.unit }}'] = {{ unit.to_base_unit }}
+      conversion_table['{{ unit.unit }}'] = {'multiplier': {{ unit.to_base_multiplier }}, 'adder': {{ unit.to_base_adder }}}
     {% endfor %}
 
-    console.log(conversion_table)
-
     function convertNumber(inputLocation) {
-      console.log("in function")
       var sourceSelector = document.getElementById("sourceDropdownMenuButton");
       var destinationSelector = document.getElementById("destinationDropdownMenuButton");
       if (sourceSelector.value != "none" && destinationSelector.value != "none")
       {
         var sourceField = document.getElementById("sourceInput");
         var destinationField = document.getElementById("destinationInput");
-        console.log(typeof(sourceField.value))
-        if (sourceField.value < 0) {
-          sourceField.value = sourceField.value * -1;
-        }
-        if (destinationField.value < 0) {
-          destinationField.value = destinationField.value * -1;
-        }
 
-        var sourceConversion = conversion_table[sourceSelector.value]
-        var destinationConversion = conversion_table[destinationSelector.value]
+
+        var sourceMultiplier = conversion_table[sourceSelector.value]['multiplier']
+        var sourceAdder = conversion_table[sourceSelector.value]['adder']
+        var destinationMultiplier = conversion_table[destinationSelector.value]['multiplier']
+        var destinationAdder = conversion_table[destinationSelector.value]['adder']
+
+        console.log(sourceMultiplier, sourceAdder)
+        console.log(destinationMultiplier, destinationAdder)
+        console.log(sourceField.value + sourceAdder)
 
         if (inputLocation == "source") {
-          console.log(sourceField.value)
-          destinationField.value = sourceField.value * sourceConversion / destinationConversion;
+          destinationField.value = ((parseInt(sourceField.value) + sourceAdder) * sourceMultiplier / destinationMultiplier) - destinationAdder;
         }
         else if (inputLocation == "destination") {
           console.log("destination")
-          sourceField.value = destinationField.value * destinationConversion / sourceConversion;
+          sourceField.value = ((parseInt(destinationField.value) + destinationAdder) * destinationMultiplier / sourceMultiplier) - sourceAdder;
         }
       }
 
@@ -57,6 +53,10 @@
   </style>
 </head>
 <h1>{{ type }} conversion </h1>
+<h4>The base unit used for this conversion is: {{ base_unit }} </h4>
+{% if type == "Currency" %}
+<h5>Last update of currency exchange: {{ last_updated }}</h5>
+{% endif %}
 <div class="row">
 <form method="POST">
   {% csrf_token %}
@@ -67,7 +67,11 @@
   </button>
   <div class="dropdown-menu" aria-labelledby="sourceDropdownMenuButton">
 {% for unit in units %}
+  {% if unit.abbreviation == "n/a" %}
     <a class="dropdown-item">{{ unit.unit }}</a>
+  {% else %}
+    <a class="dropdown-item">{{ unit.unit }} - {{ unit.abbreviation }}</a>
+  {% endif %}
 {% endfor %}
   </div>
 </div>
