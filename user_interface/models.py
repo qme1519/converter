@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Type(models.Model):
     measurement = models.CharField(max_length=50)
@@ -24,3 +25,12 @@ class BaseUnit(models.Model):
 
 class UpdateCurrency(models.Model):
     timestamp = models.BigIntegerField()
+
+class History(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    source_unit = models.ForeignKey('Unit', on_delete=models.CASCADE, related_name="source")
+    source_value = models.CharField(max_length=200)
+    destination_unit =  models.ForeignKey('Unit', on_delete=models.CASCADE, related_name="destination")
+    destination_value = models.CharField(max_length=200)
+    type = models.ForeignKey('Type', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

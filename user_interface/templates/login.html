@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block page_content %}
+  <div class="container">
+    <h2>Log in</h2>
+    {{ message }}
+    {% if logged_in == "False" %}
+    <form action="/accounts/login/" method="post" enctype="multipart/form-data")>
+            {% csrf_token %}
+            <div class="form-group" id="username">
+                {{ form.username }}
+            </div>
+            <div class="form-group" id="password">
+                {{ form.password }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    {% else %}
+    <div>
+    <a href="{% url 'log_out_view' %}">
+      <button class="btn btn-primary">Log out</button>
+    </a>
+    </div>
+    {% endif %}
+  </div>
+
+{% endblock %}

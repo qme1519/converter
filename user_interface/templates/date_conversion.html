@@ -1,0 +1,397 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+
+<link rel="stylesheet" href="{% static "user_interface/css/jquery.calendars.picker.css" %}">
+<script src="{% static "user_interface/js/jquery.plugin.js" %}"></script>
+<script src="{% static "user_interface/js/jquery.calendars.all.js" %}"></script>
+<script src="{% static "user_interface/js/jquery.calendars.julian.js" %}"></script>
+
+
+
+<head>
+    <title>{{ type }}</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <script>
+
+        function convertDate(inputLocation) {
+          var sourceSelector = document.getElementById('source_unit')
+          var destinationSelector = document.getElementById('destination_unit')
+          if (sourceSelector.value != "none" && destinationSelector.value != "none") {
+            if (sourceSelector.value == destinationSelector.value) {
+              let calendar = sourceSelector.value
+              document.getElementById("difference_value").innerHTML = 0
+              if (inputLocation == "source") {
+                var date = $("#source_unit_calendar").calendarsPicker('getDate')
+                $("#destination_unit_calendar").calendarsPicker('option', {onSelect: ''});
+                $("#destination_unit_calendar").calendarsPicker('setDate', date);
+                $("#destination_unit_calendar").calendarsPicker('option', {onSelect: destinationChange});
+                document.getElementById('id_destination_value').value = date.formatDate('dd/mm/yyyy');
+
+              } else {
+                var date = $("#destination_unit_calendar").calendarsPicker('getDate')
+                $("#source_unit_calendar").calendarsPicker('option', {onSelect: ''});
+                $("#source_unit_calendar").calendarsPicker('setDate', date);
+                $("#source_unit_calendar").calendarsPicker('option', {onSelect: sourceChange});
+                document.getElementById('id_source_value').value = date.formatDate('dd/mm/yyyy');
+              }
+            }
+            else {
+              let calendar_div = "#"+inputLocation+"_unit_calendar"
+              var date = $(calendar_div).calendarsPicker('getDate')
+              if (date['length'] != 0) {
+                result = calculateJulianDay(date[0])
+                n = result[0]
+                difference = result[1]
+                document.getElementById("difference_value").innerHTML = difference
+                var destination_calendar = ""
+                if (inputLocation == "source") {
+                  if (sourceSelector.value == "julian") {
+                    new_julian_day = n + difference
+                  } else {
+                      new_julian_day = n - difference
+                  }
+                  destination_calendar = destinationSelector.value
+                } else {
+                  if (destinationSelector.value == "julian") {
+                    new_julian_day = n + difference
+                  } else {
+                      new_julian_day = n - difference
+                  }
+                  destination_calendar = sourceSelector.value
+                }
+                date = dateFromJulian(new_julian_day, destination_calendar)
+                if (inputLocation == "source") {
+                  $("#destination_unit_calendar").calendarsPicker('option', {onSelect: ''});
+                  $("#destination_unit_calendar").calendarsPicker('setDate', date);
+                  $("#destination_unit_calendar").calendarsPicker('option', {onSelect: destinationChange});
+                  document.getElementById('id_destination_value').value = date.formatDate('dd/mm/yyyy');
+
+                }
+                else {
+                  $("#source_unit_calendar").calendarsPicker('option', {onSelect: ''});
+                  $("#source_unit_calendar").calendarsPicker('setDate', date);
+                  $("#source_unit_calendar").calendarsPicker('option', {onSelect: sourceChange});
+                  document.getElementById('id_source_value').value = date.formatDate('dd/mm/yyyy');
+
+                }
+              }
+            }
+
+          }
+        }
+
+        function calculateJulianDay(date) {
+          var year = date['_year']
+          var month = date['_month']
+          var day = date['_day']
+
+          year = year - Math.floor((12 - month)/10);
+          month = month - 3;
+          if (month < 0) {
+            month = month + 12
+          }
+          month = month % 12;
+
+          y = Math.floor((365.25 * (year + 4712))/1)
+          d = Math.floor((30.6 * month + 0.5)/1)
+
+          var n = y + d + day + 59
+
+          let difference = Math.floor((Math.floor(((n-4479.5)/36524.25)/1)*0.75+0.5)/1) - 37
+          return [n, difference]
+        }
+
+         function dateFromJulian(new_julian_day, destination_calendar) {
+            year = Math.floor((new_julian_day/365.25)/1) - 4712
+            d = new_julian_day - 59.25
+            if (d < 0) {
+              d = d + 365.25
+            }
+            d = Math.floor((d % 365.25) / 1)
+
+            month = (Math.floor(((d + 0.5)/30.6) / 1) + 2) % 12 + 1
+
+            day = Math.floor(((d + 0.5) % 30.6) / 1) + 1
+
+            let date = $.calendars.newDate(year, month, day, destination_calendar)
+
+            return date
+         }
+
+        function sourceChange(date) {
+          convertDate('source')
+          document.getElementById('id_source_value').value = date[0].formatDate('dd/mm/yyyy');
+        }
+        function destinationChange(date) {
+          convertDate('destination')
+          document.getElementById('id_destination_value').value = date[0].formatDate('dd/mm/yyyy');
+        }
+
+        function changeSourceCalendar(calendar, source_date) {
+          source_date = source_date[0]
+          if (calendar == 'gregorian') {
+            new_date = $.calendars.newDate(source_date['_year'], source_date['_month'], source_date['_day'], 'gregorian')
+            $("#source_unit_calendar").calendarsPicker('option', {onSelect: ''});
+            $("#source_unit_calendar").calendarsPicker('setDate', new_date);
+            $("#source_unit_calendar").calendarsPicker('option', {onSelect: sourceChange});
+          } else {
+            if (source_date['_month'] == 2 && source_date['_day'] == 29 && source_date['_year'] % 100 == 0 && source_date['_year'] % 400 != 0) {
+              new_date = $.calendars.newDate(source_date['_year'], source_date['_month'], source_date['_day'] - 1, 'julian')
+              $("#source_unit_calendar").calendarsPicker('option', {onSelect: ''});
+              $("#source_unit_calendar").calendarsPicker('setDate', new_date);
+              $("#source_unit_calendar").calendarsPicker('option', {onSelect: sourceChange});
+            } else {
+              new_date = $.calendars.newDate(source_date['_year'], source_date['_month'], source_date['_day'], 'julian')
+              $("#source_unit_calendar").calendarsPicker('option', {onSelect: ''});
+              $("#source_unit_calendar").calendarsPicker('setDate', new_date);
+              $("#source_unit_calendar").calendarsPicker('option', {onSelect: sourceChange});
+            }
+          }
+        }
+
+        function toggle_visibility(id) {
+          console.log(id)
+           var object = document.getElementById(id);
+           if(object.style.display == 'block')
+              object.style.display = 'none';
+           else
+              object.style.display = 'block';
+        }
+
+    </script>
+    <style>
+        .btn-sizing {
+            width: 250px;
+            height: 50px;
+        }
+
+        .inputField {
+            width: 250px;
+            height: 50px;
+            padding-bottom: 6px;
+        }
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-indent: 1px;
+            text-overflow: ''
+        }
+
+        #instructions{
+  				top: 0;
+          left: 0;
+          position: fixed;
+          width: 100%;
+          height: 120%;
+  				background-color: rgba(0,0,0,0.7);
+          display: none;
+  			}
+  			.popupBoxWrapper{
+  				width: 500px;
+          margin: 50px auto;
+          text-align: left;
+  			}
+  			.popupBoxContent{
+  				background-color: #FFF;
+          padding: 15px;
+  			}
+        .calendars-cmd-today {
+          display: none;
+        }
+        #row {
+          height:200px;
+        }
+
+
+    </style>
+</head>
+<body>
+  <div id="instructions">
+    <div class="popupBoxWrapper">
+      <div class="popupBoxContent">
+        <h3>Help</h3>
+        <p>To use the converter:</p>
+        <ol>
+          <li>Choose the calendar you want to convert from</li>
+          <li>Choose the calendar you want to convert to</li>
+          <li>Select the date you want to convert from using the calendar on the left</li>
+          <li>The converted date will be displayed on the calendar on the left</li>
+        </ol>
+        <p>The converter works both ways (changing the left calendar changes the right calendar and vice versa)</p>
+        <p>The converter tells the number of days that the two selected calendars differ by</p>
+        <p>If you have an account and are logged in, you can save your queries using the 'Add to search history' button</p>
+        <p>Click <a href="javascript:void(0)" onclick="toggle_visibility('instructions');">here</a> to close the instructions</p>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex flex-row bd-highlight mb-3">
+  <h1 class="align-self-center">{{ type }} conversion</h1>
+  <a href="javascript:void(0)" class="align-self-center m-2" onclick="toggle_visibility('instructions');">
+  <i class="fa fa-question-circle" aria-hidden="true"></i>
+  </a>
+  </div>
+<h4>The base unit used for this conversion is: Julian days</h4>
+    <form method="POST" id="userForm">
+      <div class="d-flex flex-row bd-highlight mb-3" id="row">
+        {% csrf_token %}
+        <div class="p-2 bd-highlight" id="source_unit_calendar" style="display:none"></div>
+<div class="d-flex flex-row bd-highlight align-self-start" >
+        <div class="p-2 bd-highlight">
+            <button class="btn btn-secondary btn-sizing dropdown-toggle" type="button" id="source_unit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
+              Choose a calendar
+            </button>
+            <div class="dropdown-menu" aria-labelledby="sourceDropdownMenuButton">
+                {% for unit in units %}
+                    <a class="dropdown-item">{{ unit.unit }}</a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="align-self-center p-2 bd-highlight" style="height: 50px;">
+        =
+        </div>
+
+        <div class="p-2 bd-highlight">
+            <button class="btn btn-secondary btn-sizing dropdown-toggle" type="button" id="destination_unit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
+              Choose a calendar
+            </button>
+            <div class="dropdown-menu" aria-labelledby="destinationDropdownMenuButton">
+              {% for unit in units %}
+                  <a class="dropdown-item">{{ unit.unit }}</a>
+              {% endfor %}
+            </div>
+        </div>
+        </div>
+
+        <div class="p-2 bd-highlight" id="destination_unit_calendar" style="display:none"></div>
+        {{ unit_converter.source_value }}
+        {{ unit_converter.source_unit }}
+        {{ unit_converter.destination_value }}
+        {{ unit_converter.destination_unit }}
+
+</div>
+{% if user.is_authenticated %}
+<div class="p-2 bd-highlight">
+        <button type="submit"  class="btn btn-primary btn-sizing p-2 bd-highlight">Add to search history</button>
+</div>
+
+{% else %}
+  <div class="p-2 bd-highlight">
+    You need to be logged in to save queries
+  </div>
+{% endif %}
+  </form>
+<div class="d-flex flex-row bd-highlight mb-3">
+  <div>The two callendars differ by </div>
+<div id="difference_value" style="margin-right: 5px; margin-left: 5px;"></div>
+<div> day(s)</div>
+</div>
+
+
+<script type="text/javascript">
+  var julian = $.calendars.instance('julian');
+  var gregorian = $.calendars.instance('gregorian');
+  var d = new Date()
+  var year = d.getFullYear()
+  var month = d.getMonth() + 1
+  var day = d.getDate()
+  let gregorian_date = $.calendars.newDate(year, month, day);
+  let result = calculateJulianDay(gregorian_date)
+
+  new_julian = result[0] - result[1]
+  julian_date = dateFromJulian(new_julian, 'julian')
+
+  $(function() {
+    {% if history == 'true' %}
+    console.log("history")
+    var sourceField = document.getElementById("id_source_value");
+    sourceField.value = '{{ query.source_value }}'
+    var source_unit = document.getElementById("id_source_unit");
+    source_unit.value = '{{ query.source_unit }}'
+    source_unit.innerHTML = '{{ query.source_unit }}'
+    var source_unit_toggle = document.getElementById("source_unit");
+    source_unit_toggle.value = '{{ query.source_unit }}'
+    source_unit_toggle.innerHTML = '{{ query.source_unit }}'
+
+    var destinationField = document.getElementById("id_destination_value");
+    destinationField.value = '{{ query.destination_value }}'
+    var destination_unit = document.getElementById("id_destination_unit");
+    destination_unit.value = '{{ query.destination_unit }}';
+    destination_unit.innerHTML = '{{ query.destination_unit }}';
+    var destination_unit_toggle = document.getElementById("destination_unit");
+    destination_unit_toggle.value = '{{ query.destination_unit }}';
+    destination_unit_toggle.innerHTML = '{{ query.destination_unit }}';
+
+    document.getElementById("source_unit_calendar").setAttribute("style", "display:inline-block")
+    document.getElementById("destination_unit_calendar").setAttribute("style", "display:inline-block")
+
+    $('#source_unit_calendar').calendarsPicker({calendar: {{ query.source_unit }}, yearRange: 'any', dateFormat: 'dd/mm/yyyy'});
+    $("#source_unit_calendar").calendarsPicker('setDate', '{{ query.source_value }}');
+    $("#source_unit_calendar").calendarsPicker('option', {onSelect: sourceChange});
+
+    $('#destination_unit_calendar').calendarsPicker({calendar: {{ query.destination_unit }}, yearRange: 'any', dateFormat: 'dd/mm/yyyy'});
+    $("#destination_unit_calendar").calendarsPicker('setDate', '{{ query.destination_value }}');
+    $("#destination_unit_calendar").calendarsPicker('option', {onSelect: destinationChange});
+
+    {% else %}
+
+    $('#source_unit_calendar').calendarsPicker({calendar: gregorian, onSelect: sourceChange, yearRange: 'any', dateFormat: 'dd/mm/yyyy'});
+    $('#destination_unit_calendar').calendarsPicker({calendar: gregorian, onSelect: destinationChange, yearRange: 'any', dateFormat: 'dd/mm/yyyy'});
+    {% endif %}
+  });
+    $('.dropdown-item').on('click', function() {
+        var btnObj = $(this).parent().siblings('button');
+        $(btnObj).text($(this).text());
+        $(btnObj).val($(this).text());
+
+        document.getElementById('id_'+$(btnObj).attr('id')).value = $(btnObj).val();
+        calendar_div = $(btnObj).attr('id')+"_calendar"
+        calendar_obj = document.getElementById(calendar_div)
+        calendar_visibility = calendar_obj.getAttribute("style")
+
+        where_from = calendar_div.split("_")[0]
+        if (where_from == "source") {
+          where_to = "destination_unit"
+        } else {
+          where_to = "source_unit"
+        }
+
+        selector_value = document.getElementById(where_to).value
+
+        var source_date = $("#source_unit_calendar").calendarsPicker('getDate')
+
+        if ($(btnObj).val() == 'gregorian') {
+          if (selector_value == "none") {
+            $("#"+calendar_div).calendarsPicker('option', {calendar: gregorian});
+            $("#"+calendar_div).calendarsPicker('setDate', gregorian_date)
+          }
+           else {
+            $("#"+calendar_div).calendarsPicker('option', {calendar: gregorian});
+          }
+
+        } else {
+          if (selector_value == "none") {
+            $("#"+calendar_div).calendarsPicker('option', {calendar: julian});
+            $("#"+calendar_div).calendarsPicker('setDate', julian_date)
+          } else {
+            $("#"+calendar_div).calendarsPicker('option', {calendar: julian});
+          }
+        }
+        if (where_from == "source" && source_date != '') {
+          changeSourceCalendar($(btnObj).val(), source_date)
+        }
+
+        document.getElementById(calendar_div).setAttribute("style", "display:inline-block")
+        convertDate('source');
+      });
+
+</script>
+
+<script type="text/javascript">
+
+
+</script>
+
+</body>
+{% endblock %}
