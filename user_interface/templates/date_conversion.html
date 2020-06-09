@@ -13,6 +13,9 @@
     <title>{{ type }}</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <script>
+      {% if message != 'false' %}
+      alert('{{ message }}')
+      {% endif %}
 
         function convertDate(inputLocation) {
           var sourceSelector = document.getElementById('source_unit')
@@ -271,6 +274,11 @@
         {{ unit_converter.destination_unit }}
 
 </div>
+<div class="d-flex flex-row bd-highlight mb-3 p-2">
+  <div>The two callendars differ by </div>
+<div id="difference_value" style="margin-right: 5px; margin-left: 5px;"></div>
+<div> day(s)</div>
+</div>
 {% if user.is_authenticated %}
 <div class="p-2 bd-highlight">
         <button type="submit"  class="btn btn-primary btn-sizing p-2 bd-highlight">Add to search history</button>
@@ -282,11 +290,7 @@
   </div>
 {% endif %}
   </form>
-<div class="d-flex flex-row bd-highlight mb-3">
-  <div>The two callendars differ by </div>
-<div id="difference_value" style="margin-right: 5px; margin-left: 5px;"></div>
-<div> day(s)</div>
-</div>
+
 
 
 <script type="text/javascript">
