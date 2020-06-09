@@ -17,11 +17,10 @@ def index(request):
     return render(request, "index.html", context)
 
 def conversion_types(request, type, pk=-1):
-    print(pk)
     context = {}
     context['history'] = 'false'
+    context['message'] = 'false'
     if pk != -1:
-        print(pk)
         if request.user.is_authenticated:
             user_query = History.objects.get(pk=pk)
             if user_query.user == request.user:
@@ -47,8 +46,7 @@ def conversion_types(request, type, pk=-1):
                     type=Type.objects.get(measurement__contains=type),
                     user=request.user
                 )
-                print("stored query")
-                # TODO: Inform user that query has been saved, reset the page accordingly
+                context['message'] = 'Query successfully saved'
             except:
                 return HttpResponse("There's been a problem with saving this query")
         else:
@@ -141,3 +139,5 @@ def user_history(request):
         return render(request, 'history.html', context)
     else:
         return HttpResponse("You are not logged in")
+
+print()

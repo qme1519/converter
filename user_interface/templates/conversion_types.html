@@ -15,6 +15,10 @@
           }
           {% endif %}
         {% endfor %}
+        
+        {% if message != 'false' %}
+        alert('{{ message }}')
+        {% endif %}
 
         function convertNumber(inputLocation) {
             var sourceSelector = document.getElementById("source_unit");
