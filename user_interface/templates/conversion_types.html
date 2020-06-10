@@ -8,14 +8,13 @@
         var conversion_table = {};
 
         {% for unit in units %}
-          {% if unit.abbreviation != "n/a" %}
           conversion_table['{{ unit.unit }} - {{ unit.abbreviation }}'] = {
               'multiplier': {{ unit.to_base_multiplier }},
-              'adder': {{ unit.to_base_adder }}
+              'adder': {{ unit.to_base_adder }},
+              'description': '{{ unit.description }}'
           }
-          {% endif %}
         {% endfor %}
-        
+
         {% if message != 'false' %}
         alert('{{ message }}')
         {% endif %}
@@ -28,8 +27,6 @@
                 var sourceField = document.getElementById("sourceInput");
                 var destinationField = document.getElementById("destinationInput");
 
-
-
                 var sourceMultiplier = conversion_table[sourceSelector.value]['multiplier']
                 var sourceAdder = conversion_table[sourceSelector.value]['adder']
                 var destinationMultiplier = conversion_table[destinationSelector.value]['multiplier']
@@ -37,7 +34,7 @@
 
 
                 if (inputLocation == "source") {
-                    new_value = ((parseInt(sourceField.value) + sourceAdder) * sourceMultiplier / destinationMultiplier) - destinationAdder;
+                    new_value = ((parseFloat(sourceField.value) + sourceAdder) * sourceMultiplier / destinationMultiplier) - destinationAdder;
                     destinationField.value = round(new_value, precision)
                 } else if (inputLocation == "destination") {
                   if (sourceField.value == '' && destinationField.value != '') {
@@ -45,7 +42,7 @@
                     alert("You have to choose the number to convert first (left field)")
                     return
                   }
-                  new_value = ((parseInt(destinationField.value) + destinationAdder) * destinationMultiplier / sourceMultiplier) - sourceAdder;
+                  new_value = ((parseFloat(destinationField.value) + destinationAdder) * destinationMultiplier / sourceMultiplier) - sourceAdder;
                     sourceField.value = round(new_value, precision)
                 }
             }
@@ -58,7 +55,6 @@
         }
 
         function displayVisualiser(source) {
-          console.log("toggled")
           var buttonObj = document.getElementById("visualiser_toggle")
           if (source != 'change_unit') {
           if (buttonObj.innerHTML == 'Display') {
@@ -86,7 +82,6 @@
               document.getElementById('destination_unit_visualiser').innerHTML = ""
               document.getElementById("source_unit_visualiser").innerHTML = ""
               overflow = multiplier - Math.floor(multiplier/1)
-              console.log("greater", Math.floor(multiplier/1), multiplier, overflow)
               new_height = 40/(Math.pow((multiplier/1), 0.1))
               for(var i = 0; i< Math.floor(multiplier/1); i++) {
               $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+new_height+"px;height: "+new_height+"px;'></div>");
@@ -97,7 +92,6 @@
               document.getElementById('source_unit_visualiser').innerHTML = ""
               document.getElementById('destination_unit_visualiser').innerHTML = ""
               overflow = 1/multiplier - Math.floor(1/multiplier)
-              console.log("less", Math.floor(1/multiplier), 1/multiplier, overflow)
               new_height = 40/(Math.pow((1/multiplier), 0.1))
               for(var i = 0; i< Math.floor(1/multiplier); i++) {
               $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+new_height+"px;height: "+new_height+"px;'></div>");
@@ -110,7 +104,6 @@
         }
 
     			    function toggle_visibility(id) {
-                console.log(id)
     			       var object = document.getElementById(id);
     			       if(object.style.display == 'block')
     			          object.style.display = 'none';
@@ -250,14 +243,20 @@
     <div id="visualiser_container" style="display: none;">
     <div id="source_unit_title">Source unit:</div>
   <div class="d-flex flex-row bd-highlight mb-3 flex-wrap" id="source_unit_visualiser">
-
   </div>
     <div id="destination_unit_title">Destination unit:</div>
   <div class="d-flex flex-row bd-highlight mb-3 flex-wrap" id="destination_unit_visualiser">
-
   </div>
 </div>
 {% endif %}
+<div class="p-2">
+  <div class="mr-2">Description of source unit: </div>
+<div id="source_unit_history"></div>
+</div>
+<div class="p-2">
+  <div class="mr-2">Description of destination unit: </div>
+<div id="destination_unit_history"></div>
+</div>
 <script type="text/javascript">
   {% if history == 'true' %}
   var sourceField = document.getElementById("sourceInput");
@@ -275,16 +274,37 @@
   destination_unit.innerHTML = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
   var form_destination_unit = document.getElementById("id_destination_unit");
   form_destination_unit.value = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
+
+  document.getElementById("source_unit_history").innerHTML = conversion_table['{{ query.source_unit }} - {{ query.source_unit.abbreviation }}']['description']
+  document.getElementById("destination_unit_history").innerHTML = conversion_table['{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}']['description']
+
   {% endif %}
 
     $('.dropdown-item').on('click', function() {
         var btnObj = $(this).parent().siblings('button');
         $(btnObj).text($(this).text());
         $(btnObj).val($(this).text());
+        document.getElementById($(btnObj).attr('id')+"_history").innerHTML = conversion_table[$(this).text()]['description']
         convertNumber('source');
+        {% if type == "Temperature" %}
+        if ($(btnObj).text() == "kelvin - K") {
+          if ($(btnObj).attr('id') == "source_unit") {
+            document.getElementById("sourceInput").min = 0
+          } else {
+            document.getElementById("destinationInput").min = 0
+          }
+        } else {
+          if ($(btnObj).attr('id') == "source_unit") {
+            document.getElementById("sourceInput").min = ""
+          } else {
+            document.getElementById("destinationInput").min = ""
+          }
+        }
+        {% else %}
         document.getElementById('id_'+$(btnObj).attr('id')).value = $(btnObj).val();
         document.getElementById($(btnObj).attr('id')+'_title').innerHTML = $(this).text();
         displayVisualiser('change_unit');
+        {% endif %}
     });
 
 

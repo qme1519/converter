@@ -13,6 +13,8 @@ class Unit(models.Model):
     to_base_adder = models.FloatField()
     unit = models.CharField(max_length=50)
     abbreviation = models.CharField(max_length=10)
+    description = models.TextField()
+    
     def __str__(self):
         return self.unit
 

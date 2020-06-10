@@ -17,6 +17,14 @@
       alert('{{ message }}')
       {% endif %}
 
+      var conversion_table = {}
+      {% for unit in units %}
+        conversion_table['{{ unit.unit }}'] = {
+            'description': '{{ unit.description }}'
+          }
+      {% endfor %}
+
+
         function convertDate(inputLocation) {
           var sourceSelector = document.getElementById('source_unit')
           var destinationSelector = document.getElementById('destination_unit')
@@ -154,7 +162,6 @@
         }
 
         function toggle_visibility(id) {
-          console.log(id)
            var object = document.getElementById(id);
            if(object.style.display == 'block')
               object.style.display = 'none';
@@ -291,6 +298,15 @@
 {% endif %}
   </form>
 
+  <div class="p-2">
+    <div class="mr-2">Description of source unit: </div>
+  <div id="source_unit_history"></div>
+  </div>
+  <div class="p-2">
+    <div class="mr-2">Description of destination unit: </div>
+  <div id="destination_unit_history"></div>
+  </div>
+
 
 
 <script type="text/javascript">
@@ -303,12 +319,12 @@
   let gregorian_date = $.calendars.newDate(year, month, day);
   let result = calculateJulianDay(gregorian_date)
 
+
   new_julian = result[0] - result[1]
   julian_date = dateFromJulian(new_julian, 'julian')
 
   $(function() {
     {% if history == 'true' %}
-    console.log("history")
     var sourceField = document.getElementById("id_source_value");
     sourceField.value = '{{ query.source_value }}'
     var source_unit = document.getElementById("id_source_unit");
@@ -338,6 +354,8 @@
     $("#destination_unit_calendar").calendarsPicker('setDate', '{{ query.destination_value }}');
     $("#destination_unit_calendar").calendarsPicker('option', {onSelect: destinationChange});
 
+    document.getElementById("source_unit_history").innerHTML = conversion_table['{{ query.source_unit }}']['description']
+    document.getElementById("destination_unit_history").innerHTML = conversion_table['{{ query.destination_unit }}']['description']
     {% else %}
 
     $('#source_unit_calendar').calendarsPicker({calendar: gregorian, onSelect: sourceChange, yearRange: 'any', dateFormat: 'dd/mm/yyyy'});
@@ -387,6 +405,7 @@
         }
 
         document.getElementById(calendar_div).setAttribute("style", "display:inline-block")
+        document.getElementById($(btnObj).attr('id')+"_history").innerHTML = conversion_table[$(this).text()]['description']
         convertDate('source');
       });
 
