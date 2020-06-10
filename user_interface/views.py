@@ -139,5 +139,3 @@ def user_history(request):
         return render(request, 'history.html', context)
     else:
         return HttpResponse("You are not logged in")
-
-print()
