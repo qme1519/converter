@@ -10,7 +10,6 @@ def update_current_exchange_rates():
     try:
         decoded = file.content.decode("utf-8")
         dict = json.loads(decoded)
-        print(dict)
         if dict['valid']:
             rates = dict['rates']
             for currency in rates.keys():
