@@ -8,6 +8,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.21/sorting/datetime-moment.js"></script>
 <head>
   <title>{{ user.username }}'s history</title>
 </head>
@@ -38,8 +40,8 @@
         </tfoot>
     </table>
     <script type="text/javascript">
+      $.fn.dataTable.moment('MMMM D, YYYY, H:mm a');
       var table = $('#datatable').DataTable();
-      console.log(table)
       {% for query in queries %}
         table.row.add([
         '{{ query.type.measurement }}',
