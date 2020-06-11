@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-{% load static %}
-{% block page_content %}
+{% extends "base.html" %} {% load static %} {% block page_content %}
 
 <head>
     <title>{{ type }}</title>
@@ -8,15 +6,15 @@
         var conversion_table = {};
 
         {% for unit in units %}
-          conversion_table['{{ unit.unit }} - {{ unit.abbreviation }}'] = {
-              'multiplier': {{ unit.to_base_multiplier }},
-              'adder': {{ unit.to_base_adder }},
-              'description': '{{ unit.description }}'
-          }
+        conversion_table['{{ unit.unit }} - {{ unit.abbreviation }}'] = {
+            'multiplier': {{ unit.to_base_multiplier }},
+            'adder': {{ unit.to_base_adder }},
+            'description': '{{ unit.description }}'
+        } 
         {% endfor %}
 
         {% if message != 'false' %}
-        alert('{{ message }}')
+        alert('{{ message }}') 
         {% endif %}
 
         function convertNumber(inputLocation) {
@@ -37,12 +35,12 @@
                     new_value = ((parseFloat(sourceField.value) + sourceAdder) * sourceMultiplier / destinationMultiplier) - destinationAdder;
                     destinationField.value = round(new_value, precision)
                 } else if (inputLocation == "destination") {
-                  if (sourceField.value == '' && destinationField.value != '') {
-                    destinationField.value = ''
-                    alert("You have to choose the number to convert first (left field)")
-                    return
-                  }
-                  new_value = ((parseFloat(destinationField.value) + destinationAdder) * destinationMultiplier / sourceMultiplier) - sourceAdder;
+                    if (sourceField.value == '' && destinationField.value != '') {
+                        destinationField.value = ''
+                        alert("You have to choose the number to convert first (left field)")
+                        return
+                    }
+                    new_value = ((parseFloat(destinationField.value) + destinationAdder) * destinationMultiplier / sourceMultiplier) - sourceAdder;
                     sourceField.value = round(new_value, precision)
                 }
             }
@@ -50,66 +48,66 @@
         }
 
         function round(value, precision) {
-          var multiplier = Math.pow(10, precision || 0)
-          return (Math.round(value * multiplier) / multiplier).toFixed(precision)
+            var multiplier = Math.pow(10, precision || 0)
+            return (Math.round(value * multiplier) / multiplier).toFixed(precision)
         }
 
         function displayVisualiser(source) {
-          var buttonObj = document.getElementById("visualiser_toggle")
-          if (source != 'change_unit') {
-          if (buttonObj.innerHTML == 'Display') {
-            buttonObj.innerHTML = 'Hide'
-            document.getElementById("visualiser_container").setAttribute("style", "display: block;")
-          } else {
-            buttonObj.innerHTML = 'Display'
-            document.getElementById("visualiser_container").setAttribute("style", "display: none;")
-          }
-        }
-
-          let source_unit = document.getElementById("source_unit").value;
-          let destination_unit = document.getElementById("destination_unit").value;
-
-          if (source_unit != 'none' && destination_unit != 'none' && buttonObj.innerHTML == 'Hide') {
-            let source_adder = conversion_table[source_unit]['adder']
-            let source_multiplier = conversion_table[source_unit]['multiplier']
-            let destination_adder = conversion_table[destination_unit]['adder']
-            let destination_multiplier = conversion_table[destination_unit]['multiplier']
-
-            let multiplier = ((1 + source_adder) * source_multiplier / destination_multiplier) - destination_adder;
-            var new_height = 0
-            var overflow = 0
-            if (multiplier > 1) {
-              document.getElementById('destination_unit_visualiser').innerHTML = ""
-              document.getElementById("source_unit_visualiser").innerHTML = ""
-              overflow = multiplier - Math.floor(multiplier/1)
-              new_height = 40/(Math.pow((multiplier/1), 0.1))
-              for(var i = 0; i< Math.floor(multiplier/1); i++) {
-              $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+new_height+"px;height: "+new_height+"px;'></div>");
-            }
-            $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+overflow*new_height+"px;height: "+new_height+"px;'></div>");
-            $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+new_height+"px;height: "+new_height+"px;'></div>");
-            } else {
-              document.getElementById('source_unit_visualiser').innerHTML = ""
-              document.getElementById('destination_unit_visualiser').innerHTML = ""
-              overflow = 1/multiplier - Math.floor(1/multiplier)
-              new_height = 40/(Math.pow((1/multiplier), 0.1))
-              for(var i = 0; i< Math.floor(1/multiplier); i++) {
-              $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+new_height+"px;height: "+new_height+"px;'></div>");
-              }
-              $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+overflow*new_height+"px;height: "+new_height+"px;'></div>");
-              $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: "+new_height+"px;height: "+new_height+"px;'></div>");
+            var buttonObj = document.getElementById("visualiser_toggle")
+            if (source != 'change_unit') {
+                if (buttonObj.innerHTML == 'Display') {
+                    buttonObj.innerHTML = 'Hide'
+                    document.getElementById("visualiser_container").setAttribute("style", "display: block;")
+                } else {
+                    buttonObj.innerHTML = 'Display'
+                    document.getElementById("visualiser_container").setAttribute("style", "display: none;")
+                }
             }
 
-          }
+            let source_unit = document.getElementById("source_unit").value;
+            let destination_unit = document.getElementById("destination_unit").value;
+
+            if (source_unit != 'none' && destination_unit != 'none' && buttonObj.innerHTML == 'Hide') {
+                let source_adder = conversion_table[source_unit]['adder']
+                let source_multiplier = conversion_table[source_unit]['multiplier']
+                let destination_adder = conversion_table[destination_unit]['adder']
+                let destination_multiplier = conversion_table[destination_unit]['multiplier']
+
+                let multiplier = ((1 + source_adder) * source_multiplier / destination_multiplier) - destination_adder;
+                var new_height = 0
+                var overflow = 0
+                if (multiplier > 1) {
+                    document.getElementById('destination_unit_visualiser').innerHTML = ""
+                    document.getElementById("source_unit_visualiser").innerHTML = ""
+                    overflow = multiplier - Math.floor(multiplier / 1)
+                    new_height = 40 / (Math.pow((multiplier / 1), 0.1))
+                    for (var i = 0; i < Math.floor(multiplier / 1); i++) {
+                        $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: " + new_height + "px;height: " + new_height + "px;'></div>");
+                    }
+                    $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: " + overflow * new_height + "px;height: " + new_height + "px;'></div>");
+                    $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: " + new_height + "px;height: " + new_height + "px;'></div>");
+                } else {
+                    document.getElementById('source_unit_visualiser').innerHTML = ""
+                    document.getElementById('destination_unit_visualiser').innerHTML = ""
+                    overflow = 1 / multiplier - Math.floor(1 / multiplier)
+                    new_height = 40 / (Math.pow((1 / multiplier), 0.1))
+                    for (var i = 0; i < Math.floor(1 / multiplier); i++) {
+                        $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: " + new_height + "px;height: " + new_height + "px;'></div>");
+                    }
+                    $("#source_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: " + overflow * new_height + "px;height: " + new_height + "px;'></div>");
+                    $("#destination_unit_visualiser").append("<div class='block m-1 bd-highlight' style='width: " + new_height + "px;height: " + new_height + "px;'></div>");
+                }
+
+            }
         }
 
-    			    function toggle_visibility(id) {
-    			       var object = document.getElementById(id);
-    			       if(object.style.display == 'block')
-    			          object.style.display = 'none';
-    			       else
-    			          object.style.display = 'block';
-    			    }
+        function toggle_visibility(id) {
+            var object = document.getElementById(id);
+            if (object.style.display == 'block')
+                object.style.display = 'none';
+            else
+                object.style.display = 'block';
+        }
 
     </script>
     <style>
@@ -125,195 +123,196 @@
         }
 
         .block {
-          background-color: black;
-          width: 20px;
-          height: 20px;
+            background-color: black;
+            width: 20px;
+            height: 20px;
         }
-        #instructions{
-  				top: 0;
-          left: 0;
-          position: fixed;
-          width: 100%;
-          height: 120%;
-  				background-color: rgba(0,0,0,0.7);
-          display: none;
-  			}
-  			.popupBoxWrapper{
-  				width: 500px;
-          margin: 50px auto;
-          text-align: left;
-  			}
-  			.popupBoxContent{
-  				background-color: #FFF;
-          padding: 15px;
-  			}
+
+        #instructions {
+            top: 0;
+            left: 0;
+            position: fixed;
+            width: 100%;
+            height: 120%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+        }
+
+        .popupBoxWrapper {
+            width: 500px;
+            margin: 50px auto;
+            text-align: left;
+        }
+
+        .popupBoxContent {
+            background-color: #FFF;
+            padding: 15px;
+        }
 
     </style>
 </head>
+
 <body>
-  <div id="instructions">
-    <div class="popupBoxWrapper">
-      <div class="popupBoxContent">
-        <h3>Help</h3>
-        <p>To use the converter:</p>
-        <ol>
-          <li>Enter a number into the left field</li>
-          <li>Choose the unit of this value</li>
-          <li>Choose the unit you want to convert to</li>
-          <li>The conversion will be done automatically</li>
-        </ol>
-        <p>The converter works both ways (changing the left field changes the right field and vice versa)</p>
-        {% if type != 'Temperature' %}
-        <p>You can visualise the relative sizes of two units by clicking 'display' near the 'Approximate visual comparison'</p>
-        {% endif %}
-        <p>If you have an account and are logged in, you can save your queries using the 'Add to search history' button</p>
-        <p>Click <a href="javascript:void(0)" onclick="toggle_visibility('instructions');">here</a> to close the instructions</p>
-      </div>
+    <div id="instructions">
+        <div class="popupBoxWrapper">
+            <div class="popupBoxContent">
+                <h3>Help</h3>
+                <p>To use the converter:</p>
+                <ol>
+                    <li>Enter a number into the left field</li>
+                    <li>Choose the unit of this value</li>
+                    <li>Choose the unit you want to convert to</li>
+                    <li>The conversion will be done automatically</li>
+                </ol>
+                <p>The converter works both ways (changing the left field changes the right field and vice versa)</p>
+                {% if type != 'Temperature' %}
+                <p>You can visualise the relative sizes of two units by clicking 'display' near the 'Approximate visual comparison'</p>
+                {% endif %}
+                <p>If you have an account and are logged in, you can save your queries using the 'Add to search history' button</p>
+                <p>Click <a href="javascript:void(0)" onclick="toggle_visibility('instructions');">here</a> to close the instructions</p>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="d-flex flex-row bd-highlight mb-3">
-<h1 class="align-self-center">{{ type }} conversion</h1>
-<a href="javascript:void(0)" class="align-self-center m-2" onclick="toggle_visibility('instructions');">
+    <div class="d-flex flex-row bd-highlight mb-3">
+        <h1 class="align-self-center">{{ type }} conversion</h1>
+        <a href="javascript:void(0)" class="align-self-center m-2" onclick="toggle_visibility('instructions');">
   <i class="fa fa-question-circle" aria-hidden="true"></i>
 </a>
-</div>
-<h4>The base unit used for this conversion is: {{ base_unit }} </h4>
-{% if type == "Currency" %}
-<h5>Last update of currency exchange rate: {{ last_updated }}</h5>
-{% endif %}
-<div class="d-flex flex-row bd-highlight mb-3">
-  <div class="align-self-center">
-    The number of digits after the decimal point:
     </div>
-  <div class="p-2 bd-highlight">
-<input type="number" onchange="convertNumber('source')" onkeyup="convertNumber('source')" placeholder="Digits after the decimal point" id="precision" autocomplete="off" step="1" value="2" required="false" min="0">
-</div>
-</div>
-    <form method="POST" id="userForm">
-      <div class="d-flex flex-row bd-highlight mb-3">
-        {% csrf_token %}
-        <div class="p-2 bd-highlight">
-        {{ unit_converter.source_value }}
-        </div>
-        <div class="p-2 bd-highlight">
-            <button class="btn btn-secondary btn-sizing dropdown-toggle" type="button" id="source_unit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
-              Choose a unit
-            </button>
-            <div class="dropdown-menu" aria-labelledby="sourceDropdownMenuButton">
-                {% for unit in units %}
-                    <a class="dropdown-item">{{ unit.unit }} - {{ unit.abbreviation }}</a>
-                {% endfor %}
-            </div>
-        </div>
+    <h4>The base unit used for this conversion is: {{ base_unit }} </h4>
+    {% if type == "Currency" %}
+    <h5>Last update of currency exchange rate: {{ last_updated }}</h5>
+    {% endif %}
+    <div class="d-flex flex-row bd-highlight mb-3">
         <div class="align-self-center">
-        =
+            The number of digits after the decimal point:
         </div>
         <div class="p-2 bd-highlight">
-            <button class="btn btn-secondary btn-sizing dropdown-toggle" type="button" id="destination_unit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
+            <input type="number" onchange="convertNumber('source')" onkeyup="convertNumber('source')" placeholder="Digits after the decimal point" id="precision" autocomplete="off" step="1" value="2" required="false" min="0">
+        </div>
+    </div>
+    <form method="POST" id="userForm">
+        <div class="d-flex flex-row bd-highlight mb-3">
+            {% csrf_token %}
+            <div class="p-2 bd-highlight">
+                {{ unit_converter.source_value }}
+            </div>
+            <div class="p-2 bd-highlight">
+                <button class="btn btn-secondary btn-sizing dropdown-toggle" type="button" id="source_unit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
               Choose a unit
             </button>
-            <div class="dropdown-menu" aria-labelledby="destinationDropdownMenuButton">
-              {% for unit in units %}
-                  <a class="dropdown-item">{{ unit.unit }} - {{ unit.abbreviation }}</a>
-              {% endfor %}
+                <div class="dropdown-menu" aria-labelledby="sourceDropdownMenuButton">
+                    {% for unit in units %}
+                    <a class="dropdown-item">{{ unit.unit }} - {{ unit.abbreviation }}</a> {% endfor %}
+                </div>
             </div>
-        </div>
-        <div class="p-2 bd-highlight">
-        {{ unit_converter.destination_value }}
-        </div>
-        {{ unit_converter.source_unit }}
-        {{ unit_converter.destination_unit }}
+            <div class="align-self-center">
+                =
+            </div>
+            <div class="p-2 bd-highlight">
+                <button class="btn btn-secondary btn-sizing dropdown-toggle" type="button" id="destination_unit" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="none">
+              Choose a unit
+            </button>
+                <div class="dropdown-menu" aria-labelledby="destinationDropdownMenuButton">
+                    {% for unit in units %}
+                    <a class="dropdown-item">{{ unit.unit }} - {{ unit.abbreviation }}</a> {% endfor %}
+                </div>
+            </div>
+            <div class="p-2 bd-highlight">
+                {{ unit_converter.destination_value }}
+            </div>
+            {{ unit_converter.source_unit }} {{ unit_converter.destination_unit }}
 
-</div>
-{% if user.is_authenticated %}
-    <div class="p-2 bd-highlight">
-        <button type="submit" class="btn btn-primary btn-sizing p-2 bd-highlight">Add to search history</button>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="p-2 bd-highlight">
+            <button type="submit" class="btn btn-primary btn-sizing p-2 bd-highlight">Add to search history</button>
         </div>
         {% else %}
         <div class="p-2 bd-highlight">
-          You need to be logged in to save queries
+            You need to be logged in to save queries
         </div>
-  {% endif %}
+        {% endif %}
     </form>
 
     {% if type != 'Temperature' %}
     <div class="d-flex flex-row p-2">
-    <h4 class="align-self-center">Approximate visual comparison</h4> <button type="button" name="button" class="btn btn-info m-2 align-self-center" id="visualiser_toggle" onclick="displayVisualiser('toggled')">Display</button>
+        <h4 class="align-self-center">Approximate visual comparison</h4> <button type="button" name="button" class="btn btn-info m-2 align-self-center" id="visualiser_toggle" onclick="displayVisualiser('toggled')">Display</button>
     </div>
     <div id="visualiser_container" style="display: none;">
-    <div id="source_unit_title">Source unit:</div>
-  <div class="d-flex flex-row bd-highlight mb-3 flex-wrap" id="source_unit_visualiser">
-  </div>
-    <div id="destination_unit_title">Destination unit:</div>
-  <div class="d-flex flex-row bd-highlight mb-3 flex-wrap" id="destination_unit_visualiser">
-  </div>
-</div>
-{% endif %}
-<div class="p-2">
-  <div class="mr-2">Description of source unit: </div>
-<div id="source_unit_history"></div>
-</div>
-<div class="p-2">
-  <div class="mr-2">Description of destination unit: </div>
-<div id="destination_unit_history"></div>
-</div>
-<script type="text/javascript">
-  {% if history == 'true' %}
-  var sourceField = document.getElementById("sourceInput");
-  sourceField.value = {{ query.source_value }}
-  var source_unit = document.getElementById("source_unit");
-  source_unit.value = '{{ query.source_unit }} - {{ query.source_unit.abbreviation }}'
-  source_unit.innerHTML = '{{ query.source_unit }} - {{ query.source_unit.abbreviation }}'
-  var form_source_unit = document.getElementById("id_source_unit");
-  form_source_unit.value = '{{ query.source_unit }} - {{ query.source_unit.abbreviation }}'
-
-  var destinationField = document.getElementById("destinationInput");
-  destinationField.value = {{ query.destination_value }}
-  var destination_unit = document.getElementById("destination_unit");
-  destination_unit.value = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
-  destination_unit.innerHTML = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
-  var form_destination_unit = document.getElementById("id_destination_unit");
-  form_destination_unit.value = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
-
-  document.getElementById("source_unit_history").innerHTML = conversion_table['{{ query.source_unit }} - {{ query.source_unit.abbreviation }}']['description']
-  document.getElementById("destination_unit_history").innerHTML = conversion_table['{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}']['description']
-
-  {% endif %}
-
-    $('.dropdown-item').on('click', function() {
-        var btnObj = $(this).parent().siblings('button');
-        $(btnObj).text($(this).text());
-        $(btnObj).val($(this).text());
-        document.getElementById($(btnObj).attr('id')+"_history").innerHTML = conversion_table[$(this).text()]['description']
-        convertNumber('source');
-        {% if type == "Temperature" %}
-        if ($(btnObj).text() == "kelvin - K") {
-          if ($(btnObj).attr('id') == "source_unit") {
-            document.getElementById("sourceInput").min = 0
-          } else {
-            document.getElementById("destinationInput").min = 0
-          }
-        } else {
-          if ($(btnObj).attr('id') == "source_unit") {
-            document.getElementById("sourceInput").min = ""
-          } else {
-            document.getElementById("destinationInput").min = ""
-          }
-        }
-        {% else %}
-        document.getElementById('id_'+$(btnObj).attr('id')).value = $(btnObj).val();
-        document.getElementById($(btnObj).attr('id')+'_title').innerHTML = $(this).text();
-        displayVisualiser('change_unit');
-        {% endif %}
-    });
-
-
-    {% if type == "Temperature" %}
-      var sourceInputObject = document.getElementById("sourceInput")
-      sourceInputObject.setAttribute("min", "")
-      var destinationInputObject = document.getElementById("destinationInput")
-      destinationInputObject.setAttribute("min", "")
+        <div id="source_unit_title">Source unit:</div>
+        <div class="d-flex flex-row bd-highlight mb-3 flex-wrap" id="source_unit_visualiser">
+        </div>
+        <div id="destination_unit_title">Destination unit:</div>
+        <div class="d-flex flex-row bd-highlight mb-3 flex-wrap" id="destination_unit_visualiser">
+        </div>
+    </div>
     {% endif %}
-</script>
+    <div class="p-2">
+        <div class="mr-2">Description of source unit: </div>
+        <div id="source_unit_history"></div>
+    </div>
+    <div class="p-2">
+        <div class="mr-2">Description of destination unit: </div>
+        <div id="destination_unit_history"></div>
+    </div>
+    <script type="text/javascript">
+        {% if history == 'true' %}
+        var sourceField = document.getElementById("sourceInput");
+        sourceField.value = {{ query.source_value }}
+        var source_unit = document.getElementById("source_unit");
+        source_unit.value = '{{ query.source_unit }} - {{ query.source_unit.abbreviation }}'
+        source_unit.innerHTML = '{{ query.source_unit }} - {{ query.source_unit.abbreviation }}'
+        var form_source_unit = document.getElementById("id_source_unit");
+        form_source_unit.value = '{{ query.source_unit }} - {{ query.source_unit.abbreviation }}'
+
+        var destinationField = document.getElementById("destinationInput");
+        destinationField.value = {{ query.destination_value }}
+        var destination_unit = document.getElementById("destination_unit");
+        destination_unit.value = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
+        destination_unit.innerHTML = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
+        var form_destination_unit = document.getElementById("id_destination_unit");
+        form_destination_unit.value = '{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}'
+
+        document.getElementById("source_unit_history").innerHTML = conversion_table['{{ query.source_unit }} - {{ query.source_unit.abbreviation }}']['description']
+        document.getElementById("destination_unit_history").innerHTML = conversion_table['{{ query.destination_unit }} - {{ query.destination_unit.abbreviation }}']['description']
+
+        {% endif %}
+
+        $('.dropdown-item').on('click', function() {
+            var btnObj = $(this).parent().siblings('button');
+            $(btnObj).text($(this).text());
+            $(btnObj).val($(this).text());
+            document.getElementById($(btnObj).attr('id') + "_history").innerHTML = conversion_table[$(this).text()]['description']
+            convertNumber('source');
+            document.getElementById('id_' + $(btnObj).attr('id')).value = $(btnObj).val(); 
+            {% if type == "Temperature" %}
+            if ($(btnObj).text() == "kelvin - K") {
+                if ($(btnObj).attr('id') == "source_unit") {
+                    document.getElementById("sourceInput").min = 0
+                } else {
+                    document.getElementById("destinationInput").min = 0
+                }
+            } else {
+                if ($(btnObj).attr('id') == "source_unit") {
+                    document.getElementById("sourceInput").min = ""
+                } else {
+                    document.getElementById("destinationInput").min = ""
+                }
+            } 
+            {% else %}
+            document.getElementById($(btnObj).attr('id') + '_title').innerHTML = $(this).text();
+            displayVisualiser('change_unit'); 
+            {% endif %}
+        });
+
+
+        {% if type == "Temperature" %}
+        var sourceInputObject = document.getElementById("sourceInput")
+        sourceInputObject.setAttribute("min", "")
+        var destinationInputObject = document.getElementById("destinationInput")
+        destinationInputObject.setAttribute("min", "") 
+        {% endif %}
+    </script>
 </body>
 {% endblock %}

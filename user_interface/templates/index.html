@@ -1,119 +1,123 @@
-{% extends "base.html" %}
-{% load static %}
-{% block page_content %}
-<head>
-  <title>Converter</title>
-  <script>
-    function toggle_visibility(id) {
-       var object = document.getElementById(id);
-       if(object.style.display == 'block')
-          object.style.display = 'none';
-       else
-          object.style.display = 'block';
-    }
-  </script>
-  <style>
-    .btn-primary {
-      color: #007bff;
-      background-color: #fff;
-      border-color: #007bff;
-    }
-    .btn-primary:hover {
-      color: #fff;
-      background-color: #007bff;
-      border-color: #007bff; /*set the color you want here*/
-    }
-    .btn-xl {
-      padding: auto auto;
-      width: 500px;
-      height: 150px;
-      font-size: 30px;
-    }
+{% extends "base.html" %} {% load static %} {% block page_content %}
 
-    #instructions{
-      top: 0;
-      left: 0;
-      position: fixed;
-      width: 100%;
-      height: 120%;
-      background-color: rgba(0,0,0,0.7);
-      display: none;
-    }
-    .popupBoxWrapper{
-      width: 500px;
-      margin: 50px auto;
-      text-align: left;
-    }
-    .popupBoxContent{
-      background-color: #FFF;
-      padding: 15px;
-    }
-    .calendars-cmd-today {
-      display: none;
-    }
-</style>
+<head>
+    <title>Converter</title>
+    <script>
+        function toggle_visibility(id) {
+            var object = document.getElementById(id);
+            if (object.style.display == 'block')
+                object.style.display = 'none';
+            else
+                object.style.display = 'block';
+        }
+
+    </script>
+    <style>
+        .btn-primary {
+            color: #007bff;
+            background-color: #fff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+            /*set the color you want here*/
+        }
+
+        .btn-xl {
+            padding: auto auto;
+            width: 500px;
+            height: 150px;
+            font-size: 30px;
+        }
+
+        #instructions {
+            top: 0;
+            left: 0;
+            position: fixed;
+            width: 100%;
+            height: 120%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+        }
+
+        .popupBoxWrapper {
+            width: 500px;
+            margin: 50px auto;
+            text-align: left;
+        }
+
+        .popupBoxContent {
+            background-color: #FFF;
+            padding: 15px;
+        }
+
+        .calendars-cmd-today {
+            display: none;
+        }
+
+    </style>
 </head>
 <div id="instructions">
-  <div class="popupBoxWrapper">
-    <div class="popupBoxContent">
-      <h3>Help</h3>
-      <p>To use the converter:</p>
-      <ol>
-        <li>First, choose one of the conversion types available (either from the tiles or from the navigation bar)</li>
-        <li>Each converter will have separate instructions for it</li>
-      </ol>
-      <p>You can create an account by pressing 'Sign up', or log in into an existing account using 'Log in'</p>
-      <p>If you have an account and are logged in, your last 10 queries will be displayed below</p>
-      <p>To display your full history, you can select the 'View history' tab</p>
-      <p>You can retrieve previous queries and put them back into a converter if you wish</p>
-      <p>Click <a href="javascript:void(0)" onclick="toggle_visibility('instructions');">here</a> to close the instructions</p>
+    <div class="popupBoxWrapper">
+        <div class="popupBoxContent">
+            <h3>Help</h3>
+            <p>To use the converter:</p>
+            <ol>
+                <li>First, choose one of the conversion types available (either from the tiles or from the navigation bar)</li>
+                <li>Each converter will have separate instructions for it</li>
+            </ol>
+            <p>You can create an account by pressing 'Sign up', or log in into an existing account using 'Log in'</p>
+            <p>If you have an account and are logged in, your last 10 queries will be displayed below</p>
+            <p>To display your full history, you can select the 'View history' tab</p>
+            <p>You can retrieve previous queries and put them back into a converter if you wish</p>
+            <p>Click <a href="javascript:void(0)" onclick="toggle_visibility('instructions');">here</a> to close the instructions</p>
+        </div>
     </div>
-  </div>
 </div>
 <div class="d-flex flex-row bd-highlight mb-3">
-<h1 class="align-self-center">Conversions available</h1>
-<a href="javascript:void(0)" class="align-self-center m-2" onclick="toggle_visibility('instructions');">
+    <h1 class="align-self-center">Conversions available</h1>
+    <a href="javascript:void(0)" class="align-self-center m-2" onclick="toggle_visibility('instructions');">
 <i class="fa fa-question-circle" aria-hidden="true"></i>
 </a>
 </div>
 <div class="btn-toolbar" role="toolbar">
-  {% for type in types %}
-  <div class="mr-2 mb-2" role="group">
-    <a href="{% url 'conversion_types' type.measurement %}">
-    <button type="button" class="btn btn-primary btn-xl" onclick="this.blur();"">{{ type.measurement }}</button>
-    </a>
-  </div>
-  {% endfor %}
+    {% for type in types %}
+    <div class="mr-2 mb-2" role="group">
+        <a href="{% url 'conversion_types' type.measurement %}">
+            <button type="button" class="btn btn-primary btn-xl" onclick="this.blur();">{{ type.measurement }}</button>
+        </a>
+    </div>
+    {% endfor %}
 </div>
 <h3>Previous 10 queries</h3>
 {% if user.is_authenticated %}
 <table class="table table-hover">
-  <thead>
-    <tr>
-    <th>Type</th>
-    <th>Source value</th>
-    <th>Source unit</th>
-    <th>Destination value</th>
-    <th>Destination unit</th>
-    <th>Timestamp</th>
-    <th>Repeat query</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for query in queries %}
-  <tr>
-    <td>{{ query.type.measurement }}</td>
-    <td>{{ query.source_value }}</td>
-    <td>{{ query.source_unit.abbreviation }}</td>
-    <td>{{ query.destination_value }}</td>
-    <td>{{ query.destination_unit.abbreviation }}</td>
-    <td>{{ query.timestamp }}</td>
-    <td><a href="{% url 'conversion_types_history' query.type query.pk %}"><button type="button" name="button" class="btn btn-info">Select</button></a></td>
-  </tr>
-  {% endfor %}
-  </tbody>
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Source value</th>
+            <th>Source unit</th>
+            <th>Destination value</th>
+            <th>Destination unit</th>
+            <th>Timestamp</th>
+            <th>Repeat query</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for query in queries %}
+        <tr>
+            <td>{{ query.type.measurement }}</td>
+            <td>{{ query.source_value }}</td>
+            <td>{{ query.source_unit.abbreviation }}</td>
+            <td>{{ query.destination_value }}</td>
+            <td>{{ query.destination_unit.abbreviation }}</td>
+            <td>{{ query.timestamp }}</td>
+            <td><a href="{% url 'conversion_types_history' query.type query.pk %}"><button type="button" name="button" class="btn btn-info">Select</button></a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
-{% else %}
-You need to be logged in to view your history
-{% endif %}
-{% endblock %}
+{% else %} You need to be logged in to view your history {% endif %} {% endblock %}

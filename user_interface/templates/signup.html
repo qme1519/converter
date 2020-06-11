@@ -1,20 +1,17 @@
-{% extends 'base.html' %}
-{% block page_content %}
+{% extends 'base.html' %} {% block page_content %}
 <div class="container">
-  <h2>Sign up</h2>
-  {% if logged_in == "True" %}
-  You have to log out before you can create a new account
-  <div>
-  <a href="{% url 'log_out_view' %}">
+    <h2>Sign up</h2>
+    {% if user.is_authenticated %} You have to log out before you can create a new account
+    <div>
+        <a href="{% url 'log_out_view' %}">
     <button class="btn btn-primary">Log out</button>
   </a>
-  </div>
-  {% else %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-primary" type="submit">Sign up</button>
-  </form>
-  {% endif %}
-  </div>
+    </div>
+    {% else %}
+    <form method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <button class="btn btn-primary" type="submit">Sign up</button>
+    </form>
+    {% endif %}
+</div>
 {% endblock %}
